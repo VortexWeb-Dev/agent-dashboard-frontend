@@ -31,7 +31,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         {isOpen ? (
           <>
             <h2 className="text-xl font-semibold tracking-tight text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-2 rounded-xl shadow-sm ring-1 ring-blue-100 dark:ring-blue-800">
-              Aghali Agent
+               Agent
             </h2>
 
             <button

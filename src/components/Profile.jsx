@@ -1,6 +1,6 @@
 // components/Profile.jsx
 import React from "react";
-import { useEffect,useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Mail,
   Phone,
@@ -12,6 +12,7 @@ import {
   Twitter,
   X,
 } from "lucide-react";
+import fetchData from "../utils/fetchData";
 
 const ProfileInfo = ({ icon, label, value }) => {
   return (
@@ -46,7 +47,15 @@ const SocialLink = ({ icon, href, label }) => {
 };
 
 const Profile = ({ onClose }) => {
-    const modalRef = useRef(null);
+  const modalRef = useRef(null);
+  const [data, setData] = useState(null);
+  let user = JSON.parse(localStorage.getItem("user"));
+  useEffect(() => {
+    fetchData(import.meta.env.VITE_AGENT_PERFORMANCE + user.ID).then((data) => {
+      console.log(data);
+      setData(data);
+    });
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -55,115 +64,132 @@ const Profile = ({ onClose }) => {
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [onClose]);
 
   return (
     <div className="fixed inset-0 bg-opacity-50 z-50 flex items-center justify-end p-4">
-      <div ref={modalRef} className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="relative">
-          {/* Header Background */}
-          {/* <div className="h-32 bg-gradient-to-r from-blue-500 to-blue-700 rounded-t-lg"> AGHALI</div> */}
-          <div className="h-32 bg-gradient-to-r from-blue-500 to-blue-700 rounded-t-lg flex items-center justify-center">
-            <h1 className="text-white text-5xl font-bold tracking-wide drop-shadow-lg">
-              AGHALI
-            </h1>
-          </div>
+      <div
+        ref={modalRef}
+        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+      >
+        {data ? (
+          <>
+            <div className="relative">
+              {/* Header */}
+              <div className="h-32 bg-gradient-to-r from-blue-500 to-blue-700 rounded-t-lg flex items-center justify-center">
+                <h1 className="text-white text-5xl font-bold tracking-wide drop-shadow-lg">
+                  AGENT
+                </h1>
+              </div>
 
-          {/* Close Button */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 bg-white dark:bg-gray-800 rounded-full p-1 shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-          >
-            <X size={20} className="text-gray-600 dark:text-gray-300" />
-          </button>
+              {/* Close Button */}
+              <button
+                onClick={onClose}
+                className="absolute top-4 right-4 bg-white dark:bg-gray-800 rounded-full p-1 shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+              >
+                <X size={20} className="text-gray-600 dark:text-gray-300" />
+              </button>
 
-          {/* Profile Image */}
-          <div
-            className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-            style={{ top: "110px" }}
-          >
-            <div className="w-24 h-24 rounded-full border-4 border-white dark:border-gray-800 overflow-hidden bg-gray-200 dark:bg-gray-700">
-              <img
-                src="corporate_girlie.png"
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
+              {/* Profile Image */}
+              <div
+                className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                style={{ top: "110px" }}
+              >
+                <div className="w-24 h-24 rounded-full border-4 border-white dark:border-gray-800 overflow-hidden bg-gray-200 dark:bg-gray-700">
+                  <img
+                    src={data?.employee_photo || "user.png"}
+                    alt={data?.employee || "Agent"}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Profile Content */}
-        <div className="pt-16 px-6 pb-6">
-          {/* Name and Title */}
-          <div className="text-center mb-6">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-              Alexandra Johnson
-            </h2>
-            <p className="text-blue-600 dark:text-blue-400 font-medium">
-              Senior Sales Executive
-            </p>
-          </div>
+            {/* Profile Content */}
+            <div className="pt-16 px-6 pb-6">
+              <div className="text-center mb-6">
+                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+                  {data?.employee || "Unknown"}
+                </h2>
+                <p className="text-blue-600 dark:text-blue-400 font-medium">
+                  {data?.role || "Role not specified"}
+                </p>
+              </div>
 
-          {/* Social Links */}
-          <div className="flex justify-center space-x-3 mb-6">
-            <SocialLink
-              icon={<Linkedin size={18} />}
-              href="#"
-              label="LinkedIn"
-            />
-            <SocialLink icon={<Twitter size={18} />} href="#" label="Twitter" />
-            <SocialLink icon={<Github size={18} />} href="#" label="GitHub" />
-          </div>
+              {/* Social Links */}
+              {data?.linkedin || data?.twitter || data?.facebook ? (
+                <div className="flex justify-center space-x-3 mb-6">
+                  {data.linkedin && (
+                    <SocialLink
+                      icon={<Linkedin size={18} />}
+                      href={data.linkedin}
+                      label="LinkedIn"
+                    />
+                  )}
+                  {data.twitter && (
+                    <SocialLink
+                      icon={<Twitter size={18} />}
+                      href={data.twitter}
+                      label="Twitter"
+                    />
+                  )}
+                  {data.facebook && (
+                    <SocialLink
+                      icon={<Facebook size={18} />}
+                      href={data.facebook}
+                      label="Facebook"
+                    />
+                  )}
+                </div>
+              ) : (
+                <div className="flex justify-center mb-6">
+                  <span className="text-sm text-gray-500 dark:text-gray-400 italic px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-md shadow-sm">
+                    Socials Not Provided
+                  </span>
+                </div>
+              )}
 
-          {/* Divider */}
-          <div className="border-t border-gray-200 dark:border-gray-700 my-6"></div>
+              {/* Divider */}
+              <div className="border-t border-gray-200 dark:border-gray-700 my-6"></div>
 
-          {/* Profile Information */}
-          <div className="space-y-2">
-            <ProfileInfo
-              icon={<Briefcase size={18} />}
-              label="Company"
-              value="TechSolutions Inc."
-            />
-            <ProfileInfo
-              icon={<Calendar size={18} />}
-              label="Experience"
-              value="7 years"
-            />
-            <ProfileInfo
-              icon={<Mail size={18} />}
-              label="Email"
-              value="alexandra.j@techsolutions.com"
-            />
-            <ProfileInfo
-              icon={<Phone size={18} />}
-              label="Phone"
-              value="+1 (555) 123-4567"
-            />
-            <ProfileInfo
-              icon={<MapPin size={18} />}
-              label="Location"
-              value="San Francisco, CA"
-            />
-          </div>
+              {/* Profile Info */}
+              <div className="space-y-2">
+                <ProfileInfo
+                  icon={<Briefcase size={18} />}
+                  label="Agent ID"
+                  value={user.ID}
+                />
+                <ProfileInfo
+                  icon={<Calendar size={18} />}
+                  label="Month"
+                  value= {new Intl.DateTimeFormat('en', { month: 'long' }).format(new Date())}
+                />
+                <ProfileInfo
+                  icon={<Mail size={18} />}
+                  label="Email"
+                  value={user.EMAIL}
+                />
+                <ProfileInfo
+                  icon={<Phone size={18} />}
+                  label="Phone"
+                  value={user.WORK_PHONE}
+                />
+                <ProfileInfo
+                  icon={<MapPin size={18} />}
+                  label="Location"
+                  value="UAE"
+                />
+              </div>
 
-          {/* Bio */}
-          <div className="mt-6">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-              About
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Experienced sales professional with expertise in SaaS solutions
-              and enterprise client management. Consistently exceeding quarterly
-              targets and specializing in building long-term client
-              relationships.
-            </p>
-          </div>
-        </div>
+            </div>
+          </>
+        ) : (
+          <div>Loading</div>
+        )}
       </div>
     </div>
   );
