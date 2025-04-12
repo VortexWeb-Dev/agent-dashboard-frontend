@@ -1,27 +1,3 @@
-// import { useState } from 'react'
-// import React from 'react'
-// import DarkModeToggle from './components/DarkModeToggle'
-// import './App.css'
-// import {ThemeProvider} from './context/ThemeContext'
-
-// function App() {
-
-//   return (
-//     <>
-//     <ThemeProvider>
-//     <DarkModeToggle/>
-//      <div className='text-4xl text-green-600 dark:text-blue-700 text-center my-auto'>
-//       sample text
-//      </div>
-//     </ThemeProvider>
-//     </>
-//   )
-// }
-
-// export default App
-
-// App.jsx
-// App.jsx
 import { useState } from "react";
 import React from "react";
 import Navbar from "./components/Navbar";
